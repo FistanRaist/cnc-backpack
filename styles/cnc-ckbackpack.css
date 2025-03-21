@@ -1,0 +1,124 @@
+@font-face {
+  font-family: "Soutane";
+  src: url("/modules/cnc-ckbackpack/styles/soutane-webfont.ttf") format("truetype");
+}
+@font-face {
+  font-family: "TeX Gyre Adventor";
+  src: url("/modules/cnc-ckbackpack/styles/texgyreadventor-regular-webfont.ttf") format("truetype");
+}
+
+.cnc-ckbackpack .items-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cnc-ckbackpack .items-list .item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  line-height: 30px;
+  border-bottom: 1px solid #c9c7b8;
+}
+
+.cnc-ckbackpack .items-list .container-item .container-contents {
+  margin-left: 30px;
+  border-left: 1px solid #c9c7b8;
+  padding-left: 10px;
+  list-style: none;
+  display: block !important; /* Force block layout for the container */
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item {
+  display: block !important; /* Force each item to stack as a row */
+  margin: 5px 0;
+  line-height: 30px;
+  border-bottom: 1px solid #c9c7b8;
+  background-color: #f0f0f0; /* Temporary background color for debugging */
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item.flexrow {
+  display: block !important; /* Override flexrow */
+  flex-direction: unset !important; /* Reset flex-direction */
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-name,
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-prop,
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-controls {
+  display: block !important; /* Stack inner content vertically */
+  width: 100% !important; /* Ensure full width */
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-name .item-image {
+  display: inline-block; /* Keep image inline with the name */
+  margin-right: 5px;
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-name h4 {
+  display: inline-block; /* Keep name inline with the image */
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-prop.grid.grid-2col {
+  display: block !important; /* Override grid-2col to stack vertically */
+}
+
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-prop .flex-left,
+.cnc-ckbackpack .tlgcc .items-list .container-item .container-contents .item .item-prop .flex-right {
+  display: block !important; /* Stack EV and Price vertically */
+  text-align: left !important; /* Align left for consistency */
+}
+
+.cnc-ckbackpack .container-toggle:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cnc-ckbackpack .sheet-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cnc-ckbackpack .sheet-header .profile-img {
+  margin-right: 10px;
+}
+
+.cnc-ckbackpack .header-fields {
+  flex: 1;
+}
+
+.cnc-ckbackpack .description {
+  margin-top: 10px;
+}
+
+.cnc-ckbackpack .flex-left {
+  text-align: left;
+}
+
+.cnc-ckbackpack .flex-right {
+  text-align: right;
+}
+
+.cnc-ckbackpack .align-right {
+  text-align: right;
+}
+
+/* Ensure labels match the default C&C style */
+.cnc-ckbackpack .tlgcc .resource-label {
+  font-weight: bold !important;
+  text-align: center !important;
+  font-size: 12px !important;
+  color: #4b4a44 !important;
+  margin-bottom: 2px !important;
+}
+
+/* Ensure inputs match the default C&C style */
+.cnc-ckbackpack .tlgcc input[type="text"],
+.cnc-ckbackpack .tlgcc input[type="number"] {
+  width: 100% !important;
+  text-align: center !important;
+  border: 1px solid #c9c7b8 !important;
+  background: none !important;
+  padding: 2px !important;
+}

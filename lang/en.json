@@ -1,0 +1,14 @@
+{
+  "cnc-ckbackpack": {
+    "Description": "Description",
+    "Contents": "Contents",
+    "ContainedItems": "Contained Items",
+    "NoItems": "No Items",
+    "RemoveItem": "Remove Item"
+  },
+  "TLGCC": {
+    "Price": "Price",
+    "ItemEV": "EV",
+    "ER": "ER"
+  }
+}

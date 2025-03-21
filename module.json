@@ -1,0 +1,29 @@
+{
+  "id": "cnc-ckbackpack",
+  "title": "Castles & Crusades - CK's Backpack",
+  "description": "A module for Castles & Crusades that adds container functionality to the Item Sidebar.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "12.331"
+  },
+  "authors": [
+    {
+      "name": "FistanRaist"
+    }
+  ],
+  "systems": ["castles-and-crusades"],
+  "scripts": ["cnc-ckbackpack.js"],
+  "styles": ["styles/cnc-ckbackpack.css"],
+  "templates": [
+    "templates/actor-sheet.html",
+    "templates/item-container-sheet.html"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ]
+}
