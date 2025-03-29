@@ -32,7 +32,8 @@ A Foundry VTT module for enhanced inventory management in the Castles & Crusades
 - Edge cases with malformed item data (e.g., missing `ev` or `weight`) are handled with fallbacks but may not reflect intended rules.
 
 ## Contributing
-Feel free to submit issues or pull requests on the [GitHub repository](https://github.com/yourusername/cnc-ckbackpack). Feedback from Castles & Crusades players is especially welcome!
+Feel free to submit issues or pull requests on the [GitHub repository](https://github.com/yourusername/cnc-ckbackpack). Feedback from Castles & Crusades players is especially welcome! 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G71CMBSL)
 
 ## Support
 For issues, questions, or feature requests, please open an issue on the [GitHub repository](https://github.com/yourusername/cnc-ckbackpack/issues) or contact the author via the Foundry VTT Discord community.
