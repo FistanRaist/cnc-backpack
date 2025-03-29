@@ -40,7 +40,7 @@ Feel free to submit issues or pull requests on the [GitHub repository](https://g
 For issues, questions, or feature requests, please open an issue on the [GitHub repository](https://github.com/yourusername/cnc-ckbackpack/issues) or contact the author via the Foundry VTT Discord community.
 
 ## Version History
-See the [UPDATE.md](UPDATE.md) file for a detailed changelog of all versions and updates.
+See the [CHANGELOG.md](CHANGELOG.md) file for a detailed changelog of all versions and updates.
 
 ## License
 This module is released under the MIT License. See the `LICENSE` file (if included) for details.
