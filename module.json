@@ -1,8 +1,8 @@
 {
   "id": "cnc-ckbackpack",
-  "title": "Castles & Crusades - CK's Backpack",
-  "description": "A module for Castles & Crusades that adds container functionality to the Item Sidebar.",
-  "version": "0.1.0",
+  "title": "Castles & Crusades - Backpack",
+  "description": "A module for Castles & Crusades to enhance inventory management.",
+  "version": "1.0.3",
   "compatibility": {
     "minimum": "12",
     "verified": "12.331"
@@ -12,12 +12,11 @@
       "name": "FistanRaist"
     }
   ],
-  "systems": ["castles-and-crusades"],
-  "scripts": ["cnc-ckbackpack.js"],
-  "styles": ["styles/cnc-ckbackpack.css"],
-  "templates": [
-    "templates/actor-sheet.html",
-    "templates/item-container-sheet.html"
+  "esmodules": [
+    "cnc-ckbackpack.js"
+  ],
+  "styles": [
+    "styles/cnc-ckbackpack.css"
   ],
   "languages": [
     {
@@ -25,5 +24,20 @@
       "name": "English",
       "path": "lang/en.json"
     }
-  ]
+  ],
+  "dependencies": [
+    {
+      "name": "castles-and-crusades",
+      "type": "system"
+    }
+  ],
+  "systems": [
+    "castles-and-crusades"
+  ],
+  "url": "https://github.com/FistanRaist/cnc-ckbackpack",
+  "manifest": "https://github.com/FistanRaist/cnc-ckbackpack/releases/latest/download/module.json",
+  "download": "https://github.com/FistanRaist/cnc-ckbackpack/releases/download/v1.0.3/module.zip",
+  "readme": "README.md",
+  "update": "CHANGELOG.md",
+  "license": "MIT"
 }

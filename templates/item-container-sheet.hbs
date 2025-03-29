@@ -1,0 +1,27 @@
+<form class="{{cssClass}}" autocomplete="off" action="#" method="post">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+      <div class="grid grid-4col">
+        <div class="resource">
+          <label class="resource-label">{{labels.price}}</label>
+          <input type="text" name="system.price.value" value="{{item.system.price.value}}" data-dtype="String"/>
+        </div>
+        <div class="resource">
+          <label class="resource-label">{{labels.ev}}</label>
+          <input type="number" name="system.ev.value" value="{{item.system.ev.value}}" data-dtype="Number"/>
+        </div>
+        <div class="resource">
+          <label class="resource-label">{{labels.er}}</label>
+          <input type="number" name="system.er.value" value="{{item.system.er.value}}" data-dtype="Number"/>
+        </div>
+        <!-- Empty column to match the 4-column layout -->
+        <div class="resource"></div>
+      </div>
+    </div>
+  </header>
+  <section class="description">
+    {{editor item.system.description target="system.description" button=true owner=owner editable=editable}}
+  </section>
+</form>

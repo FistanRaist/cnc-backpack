@@ -1,14 +1,19 @@
 {
-  "cnc-ckbackpack": {
-    "Description": "Description",
-    "Contents": "Contents",
-    "ContainedItems": "Contained Items",
-    "NoItems": "No Items",
-    "RemoveItem": "Remove Item"
-  },
-  "TLGCC": {
-    "Price": "Price",
-    "ItemEV": "EV",
-    "ER": "ER"
-  }
+  "cnc-ckbackpack.Description": "Description",
+  "cnc-ckbackpack.Contents": "Contents",
+  "cnc-ckbackpack.ContainedItems": "Contained Items",
+  "cnc-ckbackpack.NoItems": "No Items",
+  "cnc-ckbackpack.RemoveItem": "Remove Item",
+  "cnc-ckbackpack.IsContainer": "Is Container?",
+  "cnc-ckbackpack.ItemCurrent": "Current Load",
+  "cnc-ckbackpack.ItemCapacity": "Max Capacity",
+  "cnc-ckbackpack.EncumbranceMode": "Encumbrance Mode",
+  "cnc-ckbackpack.EncumbranceModeHint": "Choose whether to display encumbrance in Load (lbs.) or Encumbrance Value (EV).",
+  "cnc-ckbackpack.UncheckContainerWarning": "Unchecking this will move all contained items to the main inventory. Are you sure?",
+  "cnc-ckbackpack.ConfirmContainerChange": "Confirm Container Status Change",
+  "cnc-ckbackpack.DeleteContainerWarning": "Deleting this container will move all contained items to the main inventory. Are you sure?",
+  "cnc-ckbackpack.NoPermission": "You don’t have permission to modify this item.",
+  "TLGCC.Price": "Price",
+  "TLGCC.ItemEV": "EV",
+  "TLGCC.ER": "ER"
 }
