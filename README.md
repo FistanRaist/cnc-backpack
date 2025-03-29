@@ -33,6 +33,7 @@ A Foundry VTT module for enhanced inventory management in the Castles & Crusades
 
 ## Contributing
 Feel free to submit issues or pull requests on the [GitHub repository](https://github.com/yourusername/cnc-ckbackpack). Feedback from Castles & Crusades players is especially welcome! 
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/G2G71CMBSL)
 
 ## Support
