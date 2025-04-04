@@ -1,13 +1,11 @@
 /**
  * cnc-ckbackpack.js
- * A module for Foundry VTT that enhances the Castles & Crusades game system with container support and encumbrance tracking.
+ * A module for Foundry VTT that enhances the Castles & Crusades game system with container support, encumbrance tracking,
+ * and equipped status for weapons/armor in the combat tab.
  */
 
 // == Section 1: Module Initialization ==
 
-/**
- * Initializes the module by registering settings and hooks.
- */
 Hooks.once("init", () => {
   console.log("DEBUG: Initializing cnc-ckbackpack module");
 
@@ -50,13 +48,21 @@ Hooks.once("init", () => {
   link.href = cssPath;
   document.head.appendChild(link);
   console.log("DEBUG: Loaded CSS file:", cssPath);
+
+  // Extend the core Item class to ensure equipped field is initialized
+  class EnhancedTlgccItem extends CONFIG.Item.documentClass {
+    prepareData() {
+      super.prepareData();
+      if (this.type === "weapon" || this.type === "armor") {
+        this.system.equipped = this.system.equipped ?? false; // Default to false if undefined
+      }
+    }
+  }
+  CONFIG.Item.documentClass = EnhancedTlgccItem;
 });
 
 // == Section 2: Localization ==
 
-/**
- * Adds localization strings for the module.
- */
 Hooks.once("i18nInit", () => {
   const translations = {
     "cnc-ckbackpack.IsContainer": "Is Container?",
@@ -71,7 +77,6 @@ Hooks.once("i18nInit", () => {
 
 // == Section 3: Helper Functions ==
 
-// Ensure helper functions are globally accessible
 globalThis["cnc-ckbackpack"] = globalThis["cnc-ckbackpack"] || {};
 globalThis["cnc-ckbackpack"].calculateCurrentEV = calculateCurrentEV;
 globalThis["cnc-ckbackpack"].calculateTotalWeight = calculateTotalWeight;
@@ -83,18 +88,11 @@ globalThis["cnc-ckbackpack"].renderItemsList = renderItemsList;
 globalThis["cnc-ckbackpack"].updateItemContainerId = updateItemContainerId;
 globalThis["cnc-ckbackpack"].createNewItem = createNewItem;
 
-/**
- * Calculates the current EV (Encumbrance Value) of items in a container.
- * @param {Object} item - The container item.
- * @param {Object} actor - The actor owning the item.
- * @returns {number} The total EV of contained items.
- */
 function calculateCurrentEV(item, actor) {
   let currentCapacity = 0;
   console.log("DEBUG: calculateCurrentEV - Item ID:", item._id, "Item Name:", item.name);
   console.log("DEBUG: calculateCurrentEV - Item IDs in container:", item.system?.itemIds);
 
-  // Safeguard: Check if itemIds exists and is an array
   if (Array.isArray(item.system?.itemIds) && item.system.itemIds.length && actor) {
     console.log("DEBUG: calculateCurrentEV - Actor found:", actor.name);
     currentCapacity = item.system.itemIds.reduce((total, id) => {
@@ -121,12 +119,6 @@ function calculateCurrentEV(item, actor) {
   return currentCapacity;
 }
 
-/**
- * Calculates the total weight of items in a container.
- * @param {Object} item - The container item.
- * @param {Object} actor - The actor owning the item.
- * @returns {number} The total weight of contained items.
- */
 function calculateTotalWeight(item, actor) {
   let totalWeight = 0;
   if (Array.isArray(item.system?.itemIds) && item.system.itemIds.length && actor) {
@@ -138,14 +130,7 @@ function calculateTotalWeight(item, actor) {
   return totalWeight;
 }
 
-/**
- * Calculates the total carried EV (Encumbrance Value) for non-contained items.
- * @param {Object} data - The actor data.
- * @param {Array} containers - The list of container items.
- * @returns {number} The total carried EV.
- */
 function calculateCarriedEV(data, containers) {
-  // Calculate coin EV (160 coins = 1 EV, round down)
   const coinWeightEnabled = game.settings.get("cnc-ckbackpack", "coinWeightEnabled");
   const totalCoins = (data.system?.money?.pp?.value ?? 0) +
                      (data.system?.money?.gp?.value ?? 0) +
@@ -154,7 +139,6 @@ function calculateCarriedEV(data, containers) {
   const moneyEV = coinWeightEnabled ? Math.floor(totalCoins / 160) : 0;
   console.log("DEBUG: calculateCarriedEV - Money EV:", moneyEV, "Total Coins:", totalCoins);
 
-  // Calculate gear EV (non-contained items, including weapons and armor, excluding spells and features)
   const gearEV = data.items
     .filter(i => !(i.type === "item" && i.system?.isContainer) && !["spell", "feature"].includes(i.type) && !i.system?.containerId)
     .reduce((total, i) => {
@@ -164,7 +148,6 @@ function calculateCarriedEV(data, containers) {
     }, 0);
   console.log("DEBUG: calculateCarriedEV - Gear EV:", gearEV);
 
-  // Calculate container EV (EV of the containers themselves)
   const containerEV = containers.reduce((total, c) => {
     const ev = (c.system?.itemev?.value ?? 0);
     console.log(`DEBUG: calculateCarriedEV - Container: ${c.name}, EV: ${ev}`);
@@ -177,16 +160,8 @@ function calculateCarriedEV(data, containers) {
   return totalEV;
 }
 
-/**
- * Calculates the total carried weight for non-contained items.
- * @param {Object} data - The actor data.
- * @param {Array} containers - The list of container items.
- * @returns {number} The total carried weight (rounded to a whole number).
- */
 function calculateCarriedWeight(data, containers) {
   const encumbranceMode = game.settings.get("cnc-ckbackpack", "encumbranceMode");
-
-  // Calculate coin weight (160 coins = 10 lbs, round down)
   const coinWeightEnabled = game.settings.get("cnc-ckbackpack", "coinWeightEnabled");
   const totalCoins = (data.system?.money?.pp?.value ?? 0) +
                      (data.system?.money?.gp?.value ?? 0) +
@@ -195,7 +170,6 @@ function calculateCarriedWeight(data, containers) {
   const moneyWeight = coinWeightEnabled ? Math.floor(totalCoins / 160) * 10 : 0;
   console.log("DEBUG: calculateCarriedWeight - Money Weight:", moneyWeight, "Total Coins:", totalCoins);
 
-  // Calculate gear weight (non-container, non-contained items)
   const gearWeight = data.items
     .filter(i => !(i.type === "item" && i.system?.isContainer) && !["spell", "feature"].includes(i.type) && !i.system?.containerId)
     .reduce((total, i) => {
@@ -205,15 +179,12 @@ function calculateCarriedWeight(data, containers) {
     }, 0);
   console.log("DEBUG: calculateCarriedWeight - Gear Weight:", gearWeight);
 
-  // Calculate container weight (weight of the containers themselves)
   const containerWeight = containers.reduce((total, c) => {
     let weight;
     if (encumbranceMode === "lbs" && c.system?.isContainer) {
-      // In lbs mode, use EV * 10 for containers
       weight = (c.system?.itemev?.value ?? 0) * 10;
       console.log(`DEBUG: calculateCarriedWeight - Container: ${c.name}, Using EV: ${c.system?.itemev?.value}, Converted Weight: ${weight} lbs`);
     } else {
-      // In EV mode, use the weight.value directly
       weight = (c.system?.weight?.value ?? 0);
       console.log(`DEBUG: calculateCarriedWeight - Container: ${c.name}, Weight: ${weight} lbs`);
     }
@@ -223,27 +194,20 @@ function calculateCarriedWeight(data, containers) {
 
   const totalWeight = moneyWeight + gearWeight + containerWeight;
   console.log("DEBUG: calculateCarriedWeight - Total Weight:", totalWeight);
-  return Math.round(totalWeight); // Ensure whole number
+  return Math.round(totalWeight);
 }
 
-/**
- * Calculates the encumbrance rating based on Strength score and Prime attributes.
- * @param {Object} data - The actor data.
- * @returns {number} The encumbrance rating.
- */
 function calculateEncumbranceRating(data) {
   const strengthScore = data.system?.abilities?.str?.value || 0;
   const strengthPrime = data.system?.abilities?.str?.ccprimary || false;
   const constitutionPrime = data.system?.abilities?.con?.ccprimary || false;
 
-  // Log raw values for debugging
   console.log("DEBUG: calculateEncumbranceRating - Strength Score:", strengthScore);
   console.log("DEBUG: calculateEncumbranceRating - Strength Prime (ccprimary):", data.system?.abilities?.str?.ccprimary);
   console.log("DEBUG: calculateEncumbranceRating - Constitution Prime (ccprimary):", data.system?.abilities?.con?.ccprimary);
   console.log("DEBUG: calculateEncumbranceRating - Strength Prime (boolean):", strengthPrime);
   console.log("DEBUG: calculateEncumbranceRating - Constitution Prime (boolean):", constitutionPrime);
 
-  // Calculate prime bonus
   let primeBonus = 0;
   if (strengthPrime && constitutionPrime) {
     primeBonus = 6;
@@ -262,21 +226,14 @@ function calculateEncumbranceRating(data) {
   return totalRating;
 }
 
-/**
- * Determines the encumbrance category based on total EV or weight and rating.
- * @param {number} totalEV - The total carried EV (used when tracking by EV).
- * @param {number} rating - The encumbrance rating.
- * @returns {Object} The encumbrance category, tooltip, and CSS class.
- */
 function determineEncumbranceCategory(totalEV, rating) {
   const encumbranceMode = game.settings.get("cnc-ckbackpack", "encumbranceMode");
   let totalValue = totalEV;
   let ratingValue = rating;
 
-  // If tracking by weight, convert EV to lbs (1 EV = 10 lbs)
   if (encumbranceMode === "lbs") {
-    totalValue = totalEV * 10; // Convert total EV to lbs
-    ratingValue = rating * 10; // Convert rating to lbs
+    totalValue = totalEV * 10;
+    ratingValue = rating * 10;
     console.log(`DEBUG: determineEncumbranceCategory - encumbranceMode: lbs, totalValue: ${totalValue} lbs, ratingValue: ${ratingValue} lbs`);
   } else {
     console.log(`DEBUG: determineEncumbranceCategory - encumbranceMode: ev, totalValue: ${totalValue} EV, ratingValue: ${ratingValue} ER`);
@@ -302,14 +259,6 @@ function determineEncumbranceCategory(totalEV, rating) {
   };
 }
 
-/**
- * Renders the items list (containers and main inventory) for the actor sheet.
- * @param {Object} data - The actor data.
- * @param {Array} containers - The list of container items.
- * @param {Array} gear - The list of non-contained gear items.
- * @param {Map} containerStates - A Map tracking the expanded/collapsed state of containers.
- * @returns {string} The HTML for the items list.
- */
 function renderItemsList(data, containers, gear, containerStates = new Map()) {
   return `
     <ol class="items-list containers-section">
@@ -324,7 +273,6 @@ function renderItemsList(data, containers, gear, containerStates = new Map()) {
       </li>
       ${containers.map(container => {
         const contents = data.items.filter(i => container.itemIds.includes(i._id));
-        // Determine if the container is expanded based on the stored state
         const isExpanded = containerStates.get(container._id) || false;
         return `
           <li class="item container-item droppable" data-item-id="${container._id}" draggable="true">
@@ -431,16 +379,7 @@ function renderItemsList(data, containers, gear, containerStates = new Map()) {
   `;
 }
 
-/**
- * Updates an item's containerId during drag-and-drop.
- * @param {Object} item - The item being moved.
- * @param {string} containerId - The new container ID (or empty string for main inventory).
- * @param {Array} itemIds - The list of item IDs in the container.
- * @param {Object} container - The container item (if applicable).
- * @returns {Promise<void>}
- */
 async function updateItemContainerId(item, containerId, itemIds, container) {
-  // Remove the item from its previous container, if any
   const previousContainerId = item.system?.containerId;
   if (previousContainerId && previousContainerId !== containerId) {
     const previousContainer = item.actor.items.get(previousContainerId);
@@ -450,33 +389,21 @@ async function updateItemContainerId(item, containerId, itemIds, container) {
     }
   }
 
-  // Ensure non-"item" types don't have isContainer set to true
   if (item.type !== "item" && item.system?.isContainer) {
     await item.update({ "system.isContainer": undefined });
   }
 
-  // Add the item to the new container
   if (container && !itemIds.includes(item.id)) {
     itemIds.push(item.id);
     await container.update({ "system.itemIds": itemIds });
   }
 
-  // Update the item's containerId
   await item.update({ "system.containerId": containerId });
 }
 
-/**
- * Creates a new item in the actor's inventory during drag-and-drop from the sidebar.
- * @param {Object} item - The item being created.
- * @param {Object} actor - The actor to add the item to.
- * @param {string} containerId - The container ID (or empty string for main inventory).
- * @param {Array} itemIds - The list of item IDs in the container (if applicable).
- * @param {Object} container - The container item (if applicable).
- * @returns {Promise<Object|null>} The new item, or null if creation failed.
- */
 async function createNewItem(item, actor, containerId, itemIds, container) {
   const itemData = item.toObject();
-  delete itemData._id; // Remove the ID to create a new item
+  delete itemData._id;
   itemData.system.quantity = { value: 1 };
   itemData.system.containerId = containerId;
   itemData.system.isContainer = false;
@@ -498,11 +425,7 @@ async function createNewItem(item, actor, containerId, itemIds, container) {
 
 // == Section 4: Hooks ==
 
-/**
- * Enhances the item sheet with container-specific fields (e.g., "Is Container?" toggle, capacity).
- */
 Hooks.on("renderItemSheet", (app, html, data) => {
-  // Handle "item" type for container fields
   if (app.item.type === "item") {
     const headerFields = html.find(".header-fields");
     const grid4col = html.find(".grid-4col");
@@ -620,7 +543,6 @@ Hooks.on("renderItemSheet", (app, html, data) => {
     });
   }
 
-  // Add "Equipped" checkbox for weapons and armor
   if (["weapon", "armor"].includes(app.item.type)) {
     const headerFields = html.find(".header-fields");
     const grid = html.find(".grid");
@@ -641,18 +563,13 @@ Hooks.on("renderItemSheet", (app, html, data) => {
   }
 });
 
-/**
- * Enhances the actor sheet's Equipment tab with container support and encumbrance tracking.
- */
 Hooks.on("renderActorSheet", async (app, html, data) => {
   if (!app.actor || app.actor.type !== "character" || game.system.id !== "castles-and-crusades") return;
 
-  console.log("DEBUG: renderActorSheet - Starting to render Equipment tab for actor:", app.actor.name);
+  console.log("DEBUG: renderActorSheet - Starting to render tabs for actor:", app.actor.name);
 
-  // Initialize container states if not already present
   app._containerStates = app._containerStates || new Map();
 
-  // Debounce rendering to prevent excessive re-renders
   let renderTimeout = null;
   const debounceRender = () => {
     if (renderTimeout) clearTimeout(renderTimeout);
@@ -661,12 +578,11 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
       renderTimeout = null;
     }, 100);
   };
+  app.debounceRender = debounceRender;
 
-  // Step 1: Clean up stale container references and fix isContainer values
   const containerUpdates = [];
   const itemUpdates = [];
 
-  // Fix isContainer for non-"item" types
   for (const item of app.actor.items) {
     if (["weapon", "armor"].includes(item.type) && item.system?.isContainer === true) {
       console.log("DEBUG: Fixing isContainer for item - Name:", item.name, "ID:", item._id);
@@ -677,7 +593,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
     }
   }
 
-  // Clean up stale itemIds in containers
   for (const item of app.actor.items) {
     if (item.type === "item" && item.system?.isContainer) {
       const validItemIds = item.system.itemIds?.filter(id => app.actor.items.get(id)) || [];
@@ -691,7 +606,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
     }
   }
 
-  // Apply updates if any
   if (itemUpdates.length > 0) {
     await app.actor.updateEmbeddedDocuments("Item", itemUpdates);
     console.log("DEBUG: Fixed isContainer for items:", itemUpdates);
@@ -701,7 +615,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
     console.log("DEBUG: Cleaned up stale itemIds in containers:", containerUpdates);
   }
 
-  // Step 2: Categorize items into containers and gear
   const gear = [];
   const containers = [];
   const containerIds = new Set();
@@ -721,30 +634,26 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
     }
   }
 
-  // Calculate total EV for each container
   for (const container of containers) {
     container.contents = data.items.filter(i => container.itemIds.includes(i._id));
     container.totalEV = globalThis["cnc-ckbackpack"].calculateCurrentEV(container, app.actor);
   }
 
-  // Calculate encumbrance values
   const money = data.system?.money || { pp: { value: 0 }, gp: { value: 0 }, sp: { value: 0 }, cp: { value: 0 } };
   const carriedEV = globalThis["cnc-ckbackpack"].calculateCarriedEV(data, containers);
   const carriedWeight = globalThis["cnc-ckbackpack"].calculateCarriedWeight(data, containers);
   const rating = globalThis["cnc-ckbackpack"].calculateEncumbranceRating(data);
 
-  // Determine encumbrance mode and labels
   const encumbranceMode = game.settings.get("cnc-ckbackpack", "encumbranceMode");
   const displayRating = encumbranceMode === "lbs" ? rating * 10 : rating;
   const displayCarried = encumbranceMode === "lbs" ? carriedWeight : carriedEV;
   const ratingLabel = encumbranceMode === "lbs" ? `${displayRating} lbs.` : `${displayRating} ER`;
   const carriedLabel = encumbranceMode === "lbs" ? `${displayCarried} lbs.` : `${displayCarried} EV`;
   const encumbrance = globalThis["cnc-ckbackpack"].determineEncumbranceCategory(
-    encumbranceMode === "lbs" ? carriedWeight / 10 : carriedEV, // Pass carriedWeight/10 as EV equivalent when in lbs mode
+    encumbranceMode === "lbs" ? carriedWeight / 10 : carriedEV,
     rating
   );
 
-  // Render the items tab
   const itemsTab = html.find(".tab[data-tab='items']");
   if (itemsTab.length) {
     const customItemsHtml = `
@@ -803,8 +712,121 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
       ${globalThis["cnc-ckbackpack"].renderItemsList(data, containers, gear, app._containerStates)}
     `;
     itemsTab.html(customItemsHtml);
+  }
 
-    // Set up drag-and-drop functionality
+  // Combat tab enhancements
+  const combatTab = html.find(".tab[data-tab='combat']");
+  if (combatTab.length) {
+    console.log("DEBUG: Processing combat tab for actor:", app.actor.name);
+
+    // Equip toggle for weapons and armor
+    combatTab.find("li.item[data-item-id]").each((_, element) => {
+      const itemId = element.dataset.itemId;
+      const item = app.actor.items.get(itemId);
+      if (!item || (item.type !== "weapon" && item.type !== "armor")) return;
+
+      const controls = $(element).find(".item-controls");
+      const isEquipped = item.system.equipped || false;
+
+      controls.find(".equip-toggle").remove();
+      const equipIcon = `
+        <a class="item-control equip-toggle ${isEquipped ? "equipped" : ""}"
+           title="${isEquipped ? "Unequip" : "Equip"}"
+           data-item-id="${itemId}">
+          <i class="fas fa-e"></i>
+        </a>`;
+      controls.prepend(equipIcon);
+    });
+
+    // AC calculation and gear icon
+    console.log("DEBUG: Calculating AC with data:", data.system);
+    const dexBonus = data.system.abilities?.dex?.bonus ?? 0; // Pre-calculated in tlgccActor
+    let armorBonus = 0;
+    const equippedArmor = data.items.find(item => item.type === "armor" && item.system.equipped);
+    if (equippedArmor) {
+      armorBonus = equippedArmor.system.armorClass?.value ?? 0;
+    }
+    const manualModifier = app.actor.getFlag("cnc-ckbackpack", "acManualModifier") ?? 0;
+    const calculatedAC = 10 + dexBonus + armorBonus + manualModifier;
+
+    const acInput = combatTab.find("input[name='system.armorClass.value']");
+    if (acInput.length) {
+      console.log("DEBUG: Found AC input, updating to:", calculatedAC);
+      acInput.val(calculatedAC).prop("readonly", true);
+      const acContainer = acInput.parent();
+      acContainer.css("position", "relative");
+
+      acContainer.find(".ac-settings-toggle").remove();
+      const gearIcon = `
+        <a class="ac-settings-toggle" title="AC Settings" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 12px;">
+          <i class="fas fa-cog"></i>
+        </a>`;
+      acContainer.append(gearIcon);
+
+      // Persist AC to actor data
+      if (data.system.armorClass.value !== calculatedAC) {
+        console.log("DEBUG: Persisting AC update to actor:", calculatedAC);
+        await app.actor.update({ "system.armorClass.value": calculatedAC });
+      }
+    } else {
+      console.log("DEBUG: AC input not found in combat tab");
+    }
+
+    combatTab.find(".equip-toggle").click(async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const itemId = event.currentTarget.dataset.itemId;
+      const item = app.actor.items.get(itemId);
+      if (!item || (item.type !== "weapon" && item.type !== "armor")) return;
+
+      const isEquipped = item.system.equipped || false;
+      await item.update({ "system.equipped": !isEquipped });
+      debounceRender();
+    });
+
+    combatTab.find(".ac-settings-toggle").click(async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      console.log("DEBUG: AC settings toggle clicked");
+      const dialogContent = `
+        <div class="ac-settings">
+          <h2>Armor Class Calculation</h2>
+          <p>Formula: 10 + Dex Bonus + Equipped Armor + Manual Modifier</p>
+          <ul>
+            <li>Base: 10</li>
+            <li>Dex Bonus: ${dexBonus}</li>
+            <li>Equipped Armor: ${equippedArmor ? `${equippedArmor.name} (+${armorBonus})` : "None (0)"}</li>
+            <li>Manual Modifier: <input type="number" id="acManualModifier" value="${manualModifier}" style="width: 50px;"></li>
+          </ul>
+          <p>Total AC: ${calculatedAC}</p>
+        </div>
+      `;
+
+      new Dialog({
+        title: "AC Settings",
+        content: dialogContent,
+        buttons: {
+          save: {
+            label: "Save",
+            callback: async (html) => {
+              const newModifier = parseInt(html.find("#acManualModifier").val()) || 0;
+              await app.actor.setFlag("cnc-ckbackpack", "acManualModifier", newModifier);
+              debounceRender();
+            }
+          },
+          cancel: {
+            label: "Cancel"
+          }
+        },
+        default: "save"
+      }).render(true);
+    });
+  } else {
+    console.log("DEBUG: Combat tab not found for actor:", app.actor.name);
+  }
+
+  if (itemsTab.length) {
     const dragDrop = new DragDrop({
       dragSelector: ".item",
       dropSelector: ".items-list",
@@ -832,7 +854,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
           const data = TextEditor.getDragEventData(event);
           if (data.type !== "Item") return false;
 
-          // Fetch the item directly from the actor's inventory if possible
           const item = data.id ? app.actor.items.get(data.id) : await Item.fromDropData(data);
           if (!item) {
             console.error("DEBUG: Failed to retrieve item for drop - Data:", data);
@@ -840,7 +861,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
           }
           console.log("DEBUG: Dropped item - Name:", item.name, "Type:", item.type, "ID:", item.id, "Is Contained:", data.isContained);
 
-          // Find the drop target
           let containerEl = null;
           let containersSectionHeader = null;
           let mainInventorySection = null;
@@ -865,13 +885,11 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
           }
           const targetContainerId = containerEl?.dataset.itemId;
 
-          // Case 1: Dropped into a container
           if (targetContainerId) {
             const container = app.actor.items.get(targetContainerId);
             if (!container || container.type !== "item" || !container.system?.isContainer) return false;
 
             console.log("DEBUG: Drop into container - Item Name:", item.name, "Type:", item.type, "isContainer:", item.system?.isContainer);
-            // Only prevent nesting if the item is of type "item" and is a container
             if (item.type === "item" && item.system?.isContainer) {
               console.log("DEBUG: Item identified as a container - Preventing drop");
               ui.notifications.warn("Cannot place a container inside another container.");
@@ -909,7 +927,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             return true;
           }
 
-          // Case 2: Dropped into the containers section
           if (containersSectionHeader) {
             if (!data.id && ["armor", "weapon"].includes(item.type)) {
               ui.notifications.warn(`Cannot create ${item.name} (type: ${item.type}) as a container. Only items can be containers.`);
@@ -918,7 +935,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             if (data.id) {
               await globalThis["cnc-ckbackpack"].updateItemContainerId(item, "", [], null);
               await item.update({ "system.isContainer": true, "system.itemIds": item.system?.itemIds || [] });
-              // Remove the container from the state if it exists, as it will be re-rendered as a container
               app._containerStates.delete(item.id);
               debounceRender();
               return true;
@@ -931,7 +947,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             return true;
           }
 
-          // Case 3: Dropped into the main inventory
           if (mainInventorySection || mainInventoryEl) {
             if (data.isContained) {
               await globalThis["cnc-ckbackpack"].updateItemContainerId(item, "", [], null);
@@ -943,10 +958,7 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             return true;
           }
 
-          // Case 4: Dropped outside a container or main inventory
           if (data.isContained) return false;
-
-          // Case 5: Let the default system handle the drop
           return false;
         },
         dragover: (event) => {
@@ -994,7 +1006,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
       }
     }).bind(itemsTab[0]);
 
-    // Add click event listeners for "+Add" buttons
     html.find(".item-create").click(async (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -1035,7 +1046,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
       debounceRender();
     });
 
-    // Add click event listeners for quantity increment/decrement buttons
     html.find(".quantity-increment").click(async (event) => {
       event.stopPropagation();
       const itemId = event.currentTarget.dataset.itemId;
@@ -1045,7 +1055,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
         const newQuantity = currentQuantity + 1;
         const itemEV = (item.system?.itemev?.value ?? 0);
 
-        // Check if the item is inside a container
         const containerId = item.system?.containerId;
         if (containerId) {
           const container = app.actor.items.get(containerId);
@@ -1061,7 +1070,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
           }
         }
 
-        // If no capacity issues, proceed with the quantity increase
         await item.update({ "system.quantity.value": newQuantity });
         debounceRender();
       }
@@ -1082,21 +1090,17 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
       }
     });
 
-    // Add click event listener for container toggle
     html.find(".container-toggle").click((event) => {
       event.stopPropagation();
       const containerId = event.currentTarget.dataset.itemId;
       const containerEl = event.currentTarget.closest(".item");
       const contentsEl = containerEl.querySelector(".container-contents");
       const isCurrentlyExpanded = contentsEl.style.display === "block";
-      // Toggle the display
       contentsEl.style.display = isCurrentlyExpanded ? "none" : "block";
-      // Update the state in the Map
       app._containerStates.set(containerId, !isCurrentlyExpanded);
       console.log(`DEBUG: Toggled container ${containerId} to ${!isCurrentlyExpanded ? "expanded" : "collapsed"}`);
     });
 
-    // Add click event listener for item edit
     html.find(".item-edit").click((event) => {
       event.stopPropagation();
       const itemId = event.currentTarget.closest(".item").dataset.itemId;
@@ -1104,7 +1108,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
       if (item) item.sheet.render(true);
     });
 
-    // Add click event listener for item delete
     html.find(".item-delete").on("click", async (event) => {
       event.stopPropagation();
       event.preventDefault();
@@ -1134,7 +1137,6 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             await app.actor.updateEmbeddedDocuments("Item", containedItems);
           }
           await item.delete();
-          // Remove the container from the state
           app._containerStates.delete(itemId);
           debounceRender();
         }

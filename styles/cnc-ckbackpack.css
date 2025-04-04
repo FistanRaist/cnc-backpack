@@ -356,3 +356,74 @@
   font-family: 'Font Awesome 5 Free'; /* Match the font used by edit/delete */
   font-weight: 900; /* Ensure the icon is bold when equipped */
 }
+
+/* Existing styles unchanged (omitted for brevity) */
+
+/* Styles for the equip/unequip icon in the combat tab */
+.tlgcc.sheet.actor .tab[data-tab="combat"] .item-controls .equip-toggle {
+  font-size: 12px;
+  text-align: center;
+  margin: 0 6px;
+  color: #7a7971; /* Greyed out by default */
+  transition: all 0.2s ease-in-out;
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .item-controls .equip-toggle.equipped {
+  font-weight: bold;
+  color: #191813; /* Darker color when equipped */
+  text-shadow: 0 0 5px #ff0000; /* Red glow for highlight */
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .item-controls .equip-toggle:hover {
+  color: #000;
+  text-shadow: 0 0 10px red;
+  cursor: pointer;
+}
+
+/* AC settings toggle icon */
+.tlgcc.sheet.actor .tab[data-tab="combat"] .ac-settings-toggle {
+  font-size: 12px; /* Matches item-controls icons */
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  color: #7a7971;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .ac-settings-toggle:hover {
+  color: #191813;
+}
+
+/* AC settings dialog */
+.ac-settings {
+  font-size: 14px;
+  padding: 10px;
+}
+
+.ac-settings h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.ac-settings p {
+  margin: 5px 0;
+}
+
+.ac-settings ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.ac-settings ul li {
+  margin: 5px 0;
+}
+
+.ac-settings input[type="number"] {
+  width: 50px;
+  text-align: center;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+}
