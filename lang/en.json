@@ -5,6 +5,7 @@
   "cnc-ckbackpack.NoItems": "No Items",
   "cnc-ckbackpack.RemoveItem": "Remove Item",
   "cnc-ckbackpack.IsContainer": "Is Container?",
+  "cnc-ckbackpack.Equipped": "Equipped",
   "cnc-ckbackpack.ItemCurrent": "Current Load",
   "cnc-ckbackpack.ItemCapacity": "Max Capacity",
   "cnc-ckbackpack.EncumbranceMode": "Encumbrance Mode",

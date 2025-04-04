@@ -337,3 +337,22 @@
 .overburdened {
   color: red;
 }
+
+/* Style for the equip/unequip icon */
+.item-equip {
+  font-size: 12px;
+  text-align: center;
+  margin: 0 6px;
+  color: #7a7971; /* Grayed out by default */
+  text-decoration: none;
+}
+
+.item-equip.equipped {
+  font-weight: bold;
+  color: #191813; /* Darker color when equipped */
+}
+
+.equip-icon {
+  font-family: 'Font Awesome 5 Free'; /* Match the font used by edit/delete */
+  font-weight: 900; /* Ensure the icon is bold when equipped */
+}
