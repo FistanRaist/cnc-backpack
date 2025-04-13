@@ -1,0 +1,497 @@
+/* Styles for the item sheet (renderItemSheet) */
+.sheet .fields-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+  margin: 5px 0;
+}
+.sheet .fields-grid .resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sheet .fields-grid .resource label {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}
+.sheet .fields-grid .resource input {
+  width: 80%;
+  height: 24px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.05); /* Consistent background for all input fields */
+}
+.sheet .fields-grid .resource input[readonly] {
+  background: rgba(0, 0, 0, 0.05); /* Match the background of non-readonly fields */
+  cursor: not-allowed;
+}
+.sheet .fields-grid .resource .checkbox-input {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+}
+.sheet .container-label {
+  font-size: 12px;
+  margin-right: 5px;
+}
+.sheet .capacity-display {
+  margin: 5px 0;
+  text-align: center;
+}
+.sheet .capacity-display .resource-label {
+  font-size: 12px;
+  font-weight: bold;
+}
+.sheet .capacity-display .capacity-values {
+  font-size: 14px;
+  margin-top: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.sheet .capacity-display .capacity-values .current-capacity {
+  font-weight: normal;
+}
+.sheet .capacity-display .capacity-values .capacity-input {
+  width: 50px;
+  height: 24px;
+  font-size: 14px;
+  text-align: center;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Styles for the actor sheet (renderActorSheet) */
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  scroll-behavior: smooth; /* Add smooth scrolling to prevent jumping */
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list.containers-section,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list.main-inventory-section {
+  margin-bottom: 10px; /* Add spacing between sections */
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  margin: 0;
+  padding: 0 2px;
+  box-sizing: border-box;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-name,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-name {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-align: left;
+  padding: 0 5px;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-detail,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-prop {
+  flex: 1;
+  text-align: center;
+  border-left: 1px solid #c9c7b8;
+  border-right: 1px solid #c9c7b8;
+  font-size: 12px;
+  padding: 0;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-prop .grid-2col,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-prop .grid-2col {
+  display: grid;
+  grid-template-columns: 80px 80px; /* Fixed widths for EV and Price to prevent layout shifts */
+  gap: 0;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-prop .grid-3col,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-prop .grid-3col {
+  display: grid;
+  grid-template-columns: 80px 80px 80px; /* Fixed widths for Weight, EV, and Price to prevent layout shifts */
+  gap: 0;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-prop .flex-center,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-prop .flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-prop .flex-right,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-prop .flex-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-prop .flex-left,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-prop .flex-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-controls,
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .item .item-controls {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* Center icons vertically */
+  padding: 0 5px;
+  gap: 8px; /* Add spacing between icons to prevent crowding */
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item {
+  display: block; /* Stack header and contents vertically */
+  width: 100%;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item.flexrow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  margin: 0;
+  padding: 0 2px;
+}
+/* Container header wrapper (default, matches Equipment list) */
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-header-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+/* Container header when closed (default, matches Equipment list) */
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents[style*="display: none"] ~ .container-header-wrapper .item-name {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-align: left;
+  padding: 0 5px;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents[style*="display: none"] ~ .container-header-wrapper .item-prop {
+  flex: 1;
+  text-align: center;
+  border-left: 1px solid #c9c7b8;
+  border-right: 1px solid #c9c7b8;
+  font-size: 12px;
+  padding: 0;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents[style*="display: none"] ~ .container-header-wrapper .item-controls {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* Center icons vertically */
+  padding: 0 5px;
+  gap: 8px; /* Add spacing between icons to prevent crowding */
+}
+/* Container header when open (full width, matches Equipment list styling) */
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents[style*="display: block"] ~ .container-header-wrapper .item-name {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-align: left;
+  padding: 0 5px;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents[style*="display: block"] ~ .container-header-wrapper .item-prop {
+  flex: 1;
+  text-align: center;
+  border-left: 1px solid #c9c7b8;
+  border-right: 1px solid #c9c7b8;
+  font-size: 12px;
+  padding: 0;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents[style*="display: block"] ~ .container-header-wrapper .item-controls {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* Center icons vertically */
+  padding: 0 5px;
+  gap: 8px; /* Add spacing between icons to prevent crowding */
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+  margin: 0 0 0 30px; /* Indent the contents */
+  width: calc(100% - 30px);
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents .item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+  padding: 2px 0;
+  box-sizing: border-box;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .container-item .container-contents .item .item-name {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  font-size: 13px;
+  text-align: left;
+  padding: 0 5px;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* Encumbrance section styling */
+.tlgcc.sheet.actor .tab[data-tab="items"] .section.encumbrance {
+  margin-bottom: 10px;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .section.encumbrance .resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .section.encumbrance .resource input {
+  width: 100%;
+  height: 24px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.05); /* Match background with currency fields */
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .section.encumbrance .resource input.unburdened {
+  color: green;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .section.encumbrance .resource input.burdened {
+  color: yellow;
+}
+.tlgcc.sheet.actor .tab[data-tab="items"] .section.encumbrance .resource input.overburdened {
+  color: red;
+}
+
+/* Fix "+Add" button alignment */
+.tlgcc.sheet.actor .tab[data-tab="items"] .items-list .items-header .item-controls a.item-create {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* Fix "+Add" button alignment in the combat tab */
+.tlgcc.sheet.actor .tab[data-tab="combat"] .items-list .items-header .item-controls a.item-create i.fas.fa-plus {
+  line-height: 2; /* Adjust line height to center vertically */
+}
+
+/* Ensure the item-name div is a flex container for proper alignment */
+.item-name {
+  display: flex;
+  align-items: center;
+}
+
+/* Style the quantity buttons (+ and -) using Font Awesome */
+.quantity-decrement,
+.quantity-increment {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  margin: 0 6px; /* Base margin */
+  font-size: 12px; /* Match the size of other icons (edit, delete, equip) */
+  font-weight: normal; /* Font Awesome icons don't need bold */
+  color: #444; /* Updated to match the sheet's iconography */
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+/* Add specific margin to quantity-increment to ensure 30px spacing before the item name */
+.quantity-increment {
+  margin-right: 30px; /* Ensure at least 30px spacing between + and item name */
+}
+
+.quantity-decrement:hover,
+.quantity-increment:hover {
+  color: #191813; /* Match the hover color of edit/delete icons */
+}
+
+.quantity-value {
+  margin: 0 6px; /* Increased margin for more spacing */
+  font-weight: bold;
+  min-width: 20px; /* Ensure enough space for the quantity number */
+  text-align: center;
+}
+
+/* Adjust the item name to have some padding after the quantity */
+.item-name h4 {
+  margin-left: 8px; /* Add space between quantity and item name */
+}
+
+/* Existing styles */
+.unburdened {
+  color: green;
+}
+
+.burdened {
+  color: orange;
+}
+
+.overburdened {
+  color: red;
+}
+
+/* Style for the equip/unequip icon */
+.item-equip {
+  font-size: 12px;
+  text-align: center;
+  margin: 0 6px;
+  color: #7a7971; /* Grayed out by default */
+  text-decoration: none;
+}
+
+.item-equip.equipped {
+  font-weight: bold;
+  color: #191813; /* Darker color when equipped */
+}
+
+.equip-icon {
+  font-family: 'Font Awesome 5 Free'; /* Match the font used by edit/delete */
+  font-weight: 900; /* Ensure the icon is bold when equipped */
+}
+
+/* Styles for the equip/unequip icon in the combat tab */
+.tlgcc.sheet.actor .tab[data-tab="combat"] .item-controls .equip-toggle {
+  font-size: 12px;
+  text-align: center;
+  margin: 0 6px;
+  color: #7a7971; /* Greyed out by default */
+  transition: all 0.2s ease-in-out;
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .item-controls .equip-toggle.equipped {
+  font-weight: bold;
+  color: #191813; /* Darker color when equipped */
+  text-shadow: 0 0 5px #ff0000; /* Red glow for highlight */
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .item-controls .equip-toggle:hover {
+  color: #000;
+  text-shadow: 0 0 10px red;
+  cursor: pointer;
+}
+
+/* AC settings toggle icon */
+.tlgcc.sheet.actor .tab[data-tab="combat"] .ac-settings-toggle {
+  font-size: 12px; /* Matches item-controls icons */
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  color: #444; /* Updated color to match UI theme */
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .ac-settings-toggle:hover {
+  color: #191813; /* Match the hover color of edit/delete icons */
+}
+
+/* Attack/Damage settings toggle icon */
+.tlgcc.sheet.actor .tab[data-tab="combat"] .attack-damage-settings-toggle {
+  font-size: 12px; /* Matches item-controls icons */
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  color: #444; /* Updated color to match UI theme */
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.tlgcc.sheet.actor .tab[data-tab="combat"] .attack-damage-settings-toggle:hover {
+  color: #191813; /* Match the hover color of edit/delete icons */
+}
+
+/* AC settings dialog */
+.ac-settings {
+  font-size: 14px;
+  padding: 10px;
+  font-family: Signika, TexGyreAdventor, sans-serif; /* Match system font */
+}
+
+.ac-settings h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.ac-settings p {
+  margin: 5px 0;
+}
+
+.ac-settings ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.ac-settings ul li {
+  margin: 5px 0;
+}
+
+.ac-settings input[type="number"] {
+  width: 50px;
+  text-align: center;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  font-family: Signika, TexGyreAdventor, sans-serif; /* Match system font */
+}
+
+/* Attack/Damage settings dialog */
+.attack-damage-settings {
+  font-size: 14px;
+  padding: 10px;
+  font-family: Signika, TexGyreAdventor, sans-serif; /* Match system font */
+}
+
+.attack-damage-settings h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.attack-damage-settings p {
+  margin: 5px 0;
+}
+
+.attack-damage-settings ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.attack-damage-settings ul li {
+  margin: 5px 0;
+}
+
+.attack-damage-settings input[type="number"] {
+  width: 50px;
+  text-align: center;
+  border: 1px solid #7a7971;
+  border-radius: 3px;
+  font-family: Signika, TexGyreAdventor, sans-serif; /* Match system font */
+}
