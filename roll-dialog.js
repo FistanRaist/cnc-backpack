@@ -81,14 +81,7 @@ Hooks.once("init", async () => {
             return originalToMessage.call(this, message, options);
         }
 
-        const flavor = message.flavor?.toLowerCase() || "";
-        const formula = this.formula?.toLowerCase() || "";
-        const isAttackRoll = flavor.includes("attack") && formula.startsWith("1d20");
-        const isDamageRoll = flavor.includes("damage") && !formula.startsWith("1d20") && formula.includes("d");
-        if (!isAttackRoll && !isDamageRoll) {
-            return originalToMessage.call(this, message, options);
-        }
-
+        // Skip initiative rolls (e.g., max(1,1d10))
         if (this.formula.toLowerCase().includes("max(1,1d10)")) {
             return originalToMessage.call(this, message, options);
         }
@@ -97,6 +90,18 @@ Hooks.once("init", async () => {
         if (!actor) {
             return originalToMessage.call(this, message, options);
         }
+
+        const fastForwardRolls = game.settings.get("cnc-backpack", "fastForwardRolls");
+        let showDialog = !fastForwardRolls;
+        if (!showDialog) {
+            return originalToMessage.call(this, message, options);
+        }
+
+        const flavor = message.flavor?.toLowerCase() || "";
+        const formula = this.formula?.toLowerCase() || "";
+        // Determine roll type for applying global modifiers
+        const isDamageRoll = flavor.includes("damage") && !formula.startsWith("1d20") && formula.includes("d");
+        const isAttackRoll = formula.startsWith("1d20") && !isDamageRoll;
 
         const globalAttack = actor.getFlag("cnc-backpack", "globalAttack") ?? 0;
         const globalDamage = actor.getFlag("cnc-backpack", "globalDamage") ?? 0;
@@ -108,13 +113,9 @@ Hooks.once("init", async () => {
             globalModifier = globalDamage;
         }
 
-        const fastForwardRolls = game.settings.get("cnc-backpack", "fastForwardRolls");
-        let showDialog = !fastForwardRolls;
-
         if (!this._evaluated) {
             try {
-                // Use evaluateSync to avoid deprecated async option
-                this.evaluateSync();
+                await this.evaluate();
             } catch (err) {
                 return originalToMessage.call(this, message, options);
             }
@@ -130,32 +131,6 @@ Hooks.once("init", async () => {
         }
 
         const cleanFormula = baseFormula.replace(/\s*\(\)\s*$/, "");
-
-        if (!showDialog) {
-            const totalModifier = globalModifier;
-            const sign = totalModifier >= 0 ? "+" : "";
-            const newFormula = `${cleanFormula} ${sign} ${totalModifier}`;
-            const newRoll = new Roll(newFormula, {});
-            
-            try {
-                newRoll.evaluateSync();
-            } catch (err) {
-                return originalToMessage.call(this, message, options);
-            }
-
-            const newMessage = foundry.utils.deepClone(message);
-            newMessage.flavor += `<br>${game.i18n.localize("cnc-backpack.RollDialogGlobalModifier")}: ${totalModifier}, ${game.i18n.localize("cnc-backpack.RollDialogManualModifier")}: 0`;
-            newMessage.rolls = [newRoll];
-
-            const actionId = options.actionId || this.id || Date.now().toString(36);
-            const actionKey = `${actionId}_modifier_${Date.now()}`;
-            processedActions.set(actionKey, true);
-            setTimeout(() => processedActions.delete(actionKey), 1000);
-
-            options.skipModifiers = true;
-            options.skipDialog = true;
-            return await originalToMessage.call(newRoll, newMessage, options);
-        }
 
         const dialogData = {
             formula: cleanFormula,
@@ -213,7 +188,7 @@ Hooks.once("init", async () => {
         const newRoll = new Roll(newFormula, {});
         
         try {
-            newRoll.evaluateSync();
+            await newRoll.evaluate();
         } catch (err) {
             return originalToMessage.call(this, message, options);
         }
