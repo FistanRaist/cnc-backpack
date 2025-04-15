@@ -99,9 +99,10 @@ Hooks.once("init", async () => {
 
         const flavor = message.flavor?.toLowerCase() || "";
         const formula = this.formula?.toLowerCase() || "";
-        // Determine roll type for applying global modifiers
+        // Distinguish roll types
+        const isAbilityRoll = flavor.includes("ability") || flavor.includes("save") || flavor.includes("check");
         const isDamageRoll = flavor.includes("damage") && !formula.startsWith("1d20") && formula.includes("d");
-        const isAttackRoll = formula.startsWith("1d20") && !isDamageRoll;
+        const isAttackRoll = (flavor.includes("melee") || flavor.includes("ranged")) && formula.startsWith("1d20") && !isAbilityRoll;
 
         const globalAttack = actor.getFlag("cnc-backpack", "globalAttack") ?? 0;
         const globalDamage = actor.getFlag("cnc-backpack", "globalDamage") ?? 0;
@@ -112,6 +113,7 @@ Hooks.once("init", async () => {
         } else if (isDamageRoll && globalDamage !== 0) {
             globalModifier = globalDamage;
         }
+        // Ability rolls (saves and checks) do not use global modifiers
 
         if (!this._evaluated) {
             try {
