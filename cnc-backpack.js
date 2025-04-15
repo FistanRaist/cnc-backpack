@@ -546,7 +546,7 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
     const itemUpdates = [];
 
     for (const item of app.actor.items) {
-        if (["weapon", "armor"].includes(item.type) && item.system?.isContainer === true) {
+        if (["weapon", "armor"].includes(item.type) && item.system?.isContainer) {
             itemUpdates.push({
                 _id: item.id,
                 "system.isContainer": undefined
@@ -691,13 +691,19 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             controls.prepend(equipIcon);
         });
 
-        // Calculate AC based on dexterity, equipped armor, and manual modifier
+        // Calculate AC based on dexterity, all equipped items, and manual modifier
         const dexBonus = data.system.abilities?.dex?.bonus ?? 0;
         let armorBonus = 0;
-        const equippedArmor = data.items.find(item => item.type === "armor" && item.system.equipped && !item.system?.containerId);
-        if (equippedArmor) {
-            armorBonus = equippedArmor.system.armorClass?.value ?? 0;
-        }
+        // Find all equipped items that contribute to AC (not in containers)
+        const equippedACItems = data.items.filter(item => 
+            item.system.equipped && 
+            !item.system?.containerId && 
+            item.system?.armorClass?.value !== undefined
+        );
+        // Sum their AC contributions
+        armorBonus = equippedACItems.reduce((total, item) => {
+            return total + (item.system.armorClass.value ?? 0);
+        }, 0);
         const manualModifier = app.actor.getFlag("cnc-backpack", "globalAC") ?? 0;
         const calculatedAC = 10 + dexBonus + armorBonus + manualModifier;
 
@@ -744,11 +750,11 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
             const dialogContent = `
                 <div class="ac-settings">
                     <h2>Armor Class Calculation</h2>
-                    <p>Formula: 10 + Dex Bonus + Equipped Armor + Manual Modifier</p>
+                    <p>Formula: 10 + Dex Bonus + Equipped Items + Manual Modifier</p>
                     <ul>
                         <li>Base: 10</li>
                         <li>Dex Bonus: ${dexBonus}</li>
-                        <li>Equipped Armor: ${equippedArmor ? `${equippedArmor.name} (+${armorBonus})` : "None (0)"}</li>
+                        <li>Equipped Items: ${armorBonus}</li>
                         <li>Manual Modifier: <input type="number" id="globalAC" value="${manualModifier}" style="width: 50px;"></li>
                     </ul>
                     <p>Total AC: ${calculatedAC}</p>
