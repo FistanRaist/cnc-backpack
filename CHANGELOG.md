@@ -12,3 +12,9 @@ This file contains the changelog for all versions of the `cnc-backpack` module.
 - Integrated an enhanced roll dialog for attack and damage rolls with global and manual modifiers (can be disabled in settings).
 - Added automatic AC updates based on equipped armor, with manual modifier support via the AC settings dialog.
 - Ensured styling consistency using the Castles & Crusades ruleset's fonts (`Signika`, `TexGyreAdventor`).
+
+## v1.0.1 (May 3, 2025)
+- Verified for Foundry VTT v13 update.
+- Fixed a bug causing "Fast Forward" rolls to not add global modifiers.
+- Known Issues
+    - Deprecated v12 APIs. I will monitor C&C ruleset changes. If and when, the ruleset updates its use of APIs, then I will update for this add-on.
