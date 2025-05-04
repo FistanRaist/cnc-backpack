@@ -40,13 +40,13 @@ Track encumbrance in EV or lbs, configurable in settings.
 - In the **Combat** tab, use the gear icons to set global attack/damage modifiers or adjust AC calculations.
 
 ## Requirements
-- Foundry VTT v12 (minimum version 12, verified with 12.331).
 - Castles & Crusades system (`castles-and-crusades`) installed and active.
 
 ## Known Issues
 - Dropping items from the sidebar may fail if the actor lacks permission to create items.
 - Performance may lag slightly with very large inventories due to sheet re-rendering (optimization in progress).
 - Edge cases with malformed item data (e.g., missing `ev` or `weight`) are handled with fallbacks but may not reflect intended rules.
+- Use of deprecated v12 APIs due to C&C ruleset's use.
 
 ## Contributing
 Feel free to submit issues or pull requests on the [GitHub repository](https://github.com/FistanRaist/cnc-backpack). Feedback from Castles & Crusades players is especially welcome!
