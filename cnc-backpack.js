@@ -90,7 +90,8 @@ Hooks.once("i18nInit", () => {
         "cnc-backpack.IsContainer": "Is Container?",
         "cnc-backpack.ItemCurrent": "Current Load",
         "cnc-backpack.ItemCapacity": "Max Capacity",
-        "cnc-backpack.Equipped": "Equipped"
+        "cnc-backpack.Equipped": "Equipped",
+        "cnc-backpack.CannotConvertToContainer": "Weapons or armor cannot be converted to containers."
     };
 
     for (const [key, value] of Object.entries(translations)) {
@@ -613,12 +614,12 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
     app._containerStates = app._containerStates || new Map();
 
     // Debounce rendering to prevent excessive updates
-    let renderTimeout = null;
+    let renderTimeoutGDP = null;
     const debounceRender = () => {
-        if (renderTimeout) clearTimeout(renderTimeout);
-        renderTimeout = setTimeout(() => {
+        if (renderTimeoutGDP) clearTimeout(renderTimeoutGDP);
+        renderTimeoutGDP = setTimeout(() => {
             app.render(true);
-            renderTimeout = null;
+            renderTimeoutGDP = null;
         }, 100);
     };
     app.debounceRender = debounceRender;
@@ -1036,7 +1037,7 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
                         } else {
                             const warningMessage = currentEV + itemEV > containerER
                                 ? game.i18n.format("cnc-backpack.ExceedsContainerEV", { name: item.name, currentEV: currentEV + itemEV, capacity: containerER })
-                                : game.i18n.format("cnc-backpack.ExceedsContainerItemCount", { name: item.name, currentCount: currentItemCount + 1, capacity: containerER });
+                                : game.i18n.format("cnc-backpack.ExceedsContainerItemCount", { name: item.name, currentCount: currentItemCount + 1, currentEV: currentEV + itemEV, capacity: containerER });
                             if (data.id) {
                                 await globalThis["cnc-backpack"].updateItemContainerId(item, "", [], null);
                             } else {
@@ -1051,12 +1052,19 @@ Hooks.on("renderActorSheet", async (app, html, data) => {
                     }
 
                     if (containersSectionHeader) {
-                        if (!data.id && ["armor", "weapon"].includes(item.type)) {
-                            ui.notifications.warn(game.i18n.format("cnc-backpack.CannotCreateContainer", { name: item.name, type: item.type }));
-                            // Debug: Log invalid container creation attempt
-                            console.debug(`cnc-backpack | Prevented creating ${item.type} item ${item.name} (${item._id}) as a container`); // Do not Delete: Logs prevention of invalid container creation
+                        if (["weapon", "armor"].includes(item.type)) {
+                            ui.notifications.warn(game.i18n.localize("cnc-backpack.CannotConvertToContainer"));
+                            // Debug: Log invalid container conversion attempt
+                            console.debug(`cnc-backpack | Prevented converting ${item.type} item ${item.name} (${item._id}) to container`); // Do not Delete: Logs prevention of invalid container conversion
+                            if (data.id) {
+                                await globalThis["cnc-backpack"].updateItemContainerId(item, "", [], null);
+                            } else {
+                                await globalThis["cnc-backpack"].createNewItem(item, app.actor, "", null, null);
+                            }
+                            debounceRender();
                             return false;
                         }
+
                         if (data.id) {
                             await globalThis["cnc-backpack"].updateItemContainerId(item, "", [], null);
                             await item.update({ "system.isContainer": true, "system.itemIds": item.system?.itemIds || [] });
