@@ -26,16 +26,15 @@
             "path": "lang/en.json"
         }
     ],
-    "dependencies": [
-        {
-            "name": "castles-and-crusades",
-            "type": "system"
-        }
-    ],
-    "systems": [
-        "castles-and-crusades"
-    ],
+    "relationships": {
+        "systems": [
+            {
+                "id": "castles-and-crusades",
+                "type": "system"
+            }
+        ]
+    },
     "url": "https://github.com/FistanRaist/cnc-backpack",
     "manifest": "https://github.com/FistanRaist/cnc-backpack/releases/latest/download/module.json",
-    "download": "https://github.com/FistanRaist/cnc-backpack/releases/download/v1.0.0/cnc-backpack.zip"
-  }
+    "download": "https://github.com/FistanRaist/cnc-backpack/releases/download/v1.0.1/cnc-backpack.zip"
+}

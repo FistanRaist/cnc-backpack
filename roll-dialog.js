@@ -91,38 +91,9 @@ Hooks.once("init", async () => {
             return originalToMessage.call(this, message, options);
         }
 
-        // Fast Forward setting functionality
         const fastForwardRolls = game.settings.get("cnc-backpack", "fastForwardRolls");
         let showDialog = !fastForwardRolls;
         if (!showDialog) {
-            const actor = message.speaker?.actor ? game.actors.get(message.speaker.actor) : null;
-            if (actor) {
-                const flavor = message.flavor?.toLowerCase() || "";
-                const formula = this.formula?.toLowerCase() || "";
-                const isAttackRoll = (flavor.includes("melee") || flavor.includes("ranged")) && formula.startsWith("1d20") && !flavor.includes("ability") && !flavor.includes("save") && !flavor.includes("check");
-                const isDamageRoll = flavor.includes("damage") && !formula.startsWith("1d20") && formula.includes("d");
-                const globalAttack = actor.getFlag("cnc-backpack", "globalAttack") ?? 0;
-                const globalDamage = actor.getFlag("cnc-backpack", "globalDamage") ?? 0;
-                let globalModifier = 0;
-                if (isAttackRoll && globalAttack !== 0) {
-                    globalModifier = globalAttack;
-                } else if (isDamageRoll && globalDamage !== 0) {
-                    globalModifier = globalDamage;
-                }
-                if (globalModifier !== 0) {
-                    const cleanFormula = this.formula.replace(/\s*\(\)\s*$/, "");
-                    const sign = globalModifier >= 0 ? "+" : "";
-                    const newFormula = `${cleanFormula} ${sign} ${globalModifier}`;
-                    const newRoll = new Roll(newFormula, {});
-                    await newRoll.evaluate();
-                    const newMessage = foundry.utils.deepClone(message);
-                    newMessage.flavor += `<br>${game.i18n.localize("cnc-backpack.RollDialogGlobalModifier")}: ${globalModifier}`;
-                    newMessage.rolls = [newRoll];
-                    options.skipModifiers = true;
-                    options.skipDialog = true;
-                    return originalToMessage.call(newRoll, newMessage, options);
-                }
-            }
             return originalToMessage.call(this, message, options);
         }
 
